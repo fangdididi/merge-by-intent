@@ -1,0 +1,28 @@
+{
+  "operation": "merge",
+  "target": "main <- feature/config-file",
+  "backup_ref": "backup/pre-merge-2026-11-19",
+  "sides": "ours = main (HEAD), theirs = feature/config-file",
+  "markers_left": 0,
+  "hunks": [
+    {"id": "settings.py#1", "kind": "BOTH-ADD", "resolution": "BOTH",
+     "note": "kept import re and import json, one line each"},
+    {"id": "settings.py#2", "kind": "TRUE",
+     "ours_intent": "uploads to slow NAS disks need 30 s, 20 s caused timeouts (commit a1b2c3d)",
+     "theirs_intent": "operators must be able to set the timeout without a deploy (commit 9f8e7d6)",
+     "resolution": "BLEND",
+     "result": "UPLOAD_TIMEOUT_S = int(os.environ.get(\"UPLOAD_TIMEOUT_S\", \"30\"))",
+     "proof": "pytest tests/test_upload.py::test_default_timeout_is_30 and ::test_env_override"},
+    {"id": "settings.py#3", "kind": "ONE-SIDED", "resolution": "THEIRS"}
+  ],
+  "semantic_risks": [
+    {"symbol": "load_cfg", "removed_by": "ours", "still_used_by": "theirs", "status": "fixed",
+     "note": "theirs' new call in cli.py renamed to read_config"}
+  ],
+  "checks": [
+    {"cmd": "python -m compileall -q .", "result": "pass"},
+    {"cmd": "pytest -q", "result": "pass"},
+    {"cmd": "rg -n '^(<<<<<<<|\\|\\|\\|\\|\\|\\|\\||=======|>>>>>>>)' .", "result": "pass"}
+  ],
+  "pushed": false
+}
